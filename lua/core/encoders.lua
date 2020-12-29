@@ -13,6 +13,8 @@ encoders.sens = {1,1,1}
 encoders.time = {now,now,now}
 encoders.callback = norns.none
 
+local enc_map = { 2, 1, 3 } -- means by default enc1 will act as enc1, enc2 as enc2, enc3 as enc3
+
 --- set acceleration
 encoders.set_accel = function(n,z)
   if n == 0 then
@@ -21,6 +23,7 @@ encoders.set_accel = function(n,z)
       encoders.tick[k] = 0
     end
   else
+    n = enc_map[n]
     encoders.accel[n] = z
     encoders.tick[n] = 0
   end
@@ -34,6 +37,7 @@ encoders.set_sens = function(n,s)
       encoders.tick[k] = 0
     end
   else
+    n = enc_map[n]
     encoders.sens[n] = util.clamp(s,1,16)
     encoders.tick[n] = 0
   end
@@ -41,6 +45,7 @@ end
 
 --- process delta
 encoders.process = function(n,d)
+  n = enc_map[n]
   now = util.time()
   local diff = now - encoders.time[n]
   encoders.time[n] = now
@@ -76,6 +81,7 @@ norns.enc.accel = function(n,z)
       accel[k] = z
     end
   else
+    n = enc_map[n]
     accel[n] = z
   end
   if(_menu.mode == false) then norns.encoders.set_accel(n,z) end
@@ -87,6 +93,7 @@ norns.enc.sens = function(n,s)
       sens[k] = util.clamp(s,1,16)
     end
   else
+    n = enc_map[n]
     sens[n] = util.clamp(s,1,16)
   end
   if(_menu.mode == false) then norns.encoders.set_sens(n,s) end
