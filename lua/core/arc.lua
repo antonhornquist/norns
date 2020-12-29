@@ -5,6 +5,10 @@
 ---------------------------------
 -- Arc device class
 
+use_arc_for_menu_operation = true -- TODO make these not globals
+arc_menu_delta_1 = 0
+arc_menu_delta_2 = 0
+
 local vport = require 'vport'
 
 local Arc = {}
@@ -207,6 +211,33 @@ end
 
 _norns.arc.delta = function(id, n, delta)
   local device = Arc.devices[id]
+
+  if use_arc_for_menu_operation then
+    if _menu.mode then
+      if n == 1 then
+        arc_menu_delta_1 = arc_menu_delta_1 + delta
+
+        if arc_menu_delta_1 > 12 then
+          _menu.penc(n+1, 1)
+          arc_menu_delta_1 = 0
+        elseif arc_menu_delta_1 < -12 then
+          _menu.penc(n+1, -1)
+          arc_menu_delta_1 = 0
+        end
+      elseif n == 2 then
+        arc_menu_delta_2 = arc_menu_delta_2 + delta
+
+        if arc_menu_delta_2 > 12 then
+          _menu.penc(n+1, 1)
+          arc_menu_delta_2 = 0
+        elseif arc_menu_delta_2 < -12 then
+          _menu.penc(n+1, -1)
+          arc_menu_delta_2 = 0
+        end
+      end
+      return
+    end
+  end
 
   if device ~= nil then
     if device.delta then
